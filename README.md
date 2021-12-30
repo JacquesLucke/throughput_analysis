@@ -26,6 +26,8 @@ The following aspects are varied between different benchmarks in this project:
 
 ![image](results/graph_readme.png)
 
+Note, changes at the 30k mark are most likely caused by a change sampling strategy at that point. Needs further investigation.
+
 Interactive versions of the graph:
 * Log X Scale: http://htmlpreview.github.io/?https://github.com/JacquesLucke/throughput_analysis/blob/main/results/graph_log.html
 * Linear X Scale: http://htmlpreview.github.io/?https://github.com/JacquesLucke/throughput_analysis/blob/main/results/graph_linear.html
