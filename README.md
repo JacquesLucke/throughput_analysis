@@ -24,7 +24,7 @@ The following aspects are varied between different benchmarks in this project:
     * Loop unrolling and vectorization done by the compiler (see 1 - 2k in the graph).
     * Something probably related to page sizes which I can't fully explain yet (see 10k - 30k in the graph).
 
-![image](images/graph_readme.png)
+![image](results/graph_readme.png)
 
 Interactive versions of the graph:
 * Log X Scale: http://htmlpreview.github.io/?https://github.com/JacquesLucke/throughput_analysis/blob/main/results/graph_log.html
