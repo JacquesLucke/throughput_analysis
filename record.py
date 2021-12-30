@@ -42,7 +42,7 @@ def compile_program(flags: tuple[str] = ()):
     args = [
         "clang++",
         current_directory / "main.cc",
-        current_directory / "function.cc",
+        current_directory / "benchmark_function.cc",
         "-o", current_directory / "main",
         "-std=c++17"
     ]

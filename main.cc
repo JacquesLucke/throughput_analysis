@@ -6,7 +6,7 @@
 
 #include "external/argparse/argparse.hpp"
 
-#include "function.hh"
+#include "benchmark_functions.hh"
 
 /**
  * Variables to change:
