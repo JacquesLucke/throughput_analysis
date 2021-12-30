@@ -63,7 +63,7 @@ def generate_linear_sizes(min_size: int, max_size: int, step: int):
 
 def generate_sizes():
     # yield from generate_linear_sizes(1, 100, 1)
-    yield from generate_linear_sizes(5000, 8000, 16)
+    yield from generate_linear_sizes(10, 100, 1)
 
 sizes = []
 throughputs = []
