@@ -30,7 +30,6 @@ Interactive versions of the graph:
 * Log X Scale: http://htmlpreview.github.io/?https://github.com/JacquesLucke/throughput_analysis/blob/main/results/graph_log.html
 * Linear X Scale: http://htmlpreview.github.io/?https://github.com/JacquesLucke/throughput_analysis/blob/main/results/graph_linear.html
 
-## Dependencies
-
-* Python 3.9+ with plotly.
+External Dependencies:
 * Clang to compile C++17 code.
+* Python 3.9+ with plotly.
