@@ -37,6 +37,9 @@ int main(int argc, char const* argv[]) {
       .help("alignment of the buffers being processed")
       .scan<'i', int64_t>()
       .default_value<int64_t>(64);
+  arg_parser.add_argument("operation")
+      .default_value<std::string>("add")
+      .help("'add' or 'mul'");
 
   try {
     arg_parser.parse_args(argc, argv);
@@ -52,18 +55,24 @@ int main(int argc, char const* argv[]) {
   const int64_t alignment = arg_parser.get<int64_t>("alignment");
   int* buffer1 = alloc_buffer<int>(buffer_size, alignment);
   int* buffer2 = alloc_buffer<int>(buffer_size, alignment);
-  const int64_t value = 1;
+
+  const std::string operation_name = arg_parser.get<std::string>("operation");
+  OperationFn operation_fn = add_operation;
+  if (operation_name == "mul") {
+    operation_fn = mul_operation;
+  }
 
   const int64_t iterations = tot_throughput / buffer_size;
 
   /* Warm up memory. */
-  add_constant(buffer1, value, buffer2, buffer_size);
+  operation_fn(buffer1, 42, buffer2, buffer_size);
 
   const auto start_time = std::chrono::high_resolution_clock::now();
   for (int64_t iter = 0; iter < iterations; iter++) {
-    add_constant(buffer1, value, buffer2, buffer_size);
+    operation_fn(buffer1, 42, buffer2, buffer_size);
   }
   const auto end_time = std::chrono::high_resolution_clock::now();
+
   const std::chrono::nanoseconds duration = end_time - start_time;
   const double duration_ms = duration.count() / 1'000'000.0;
   const int64_t throughput_ms = buffer_size * iterations / duration_ms;
