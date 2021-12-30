@@ -14,30 +14,37 @@
  * - operation complexity
  */
 
-template <typename T> T *alloc_buffer(const int64_t size) {
+static void *aligned_allocate(const int64_t size, const int64_t alignment)
+{
+  void *buffer = malloc(size + alignment - 1);
+  return (void *)(((uintptr_t)buffer + alignment) & ~(uintptr_t)(alignment - 1));
+}
+
+template <typename T>
+static T *alloc_buffer(const int64_t size)
+{
   const int64_t offset = 0;
   const int64_t tot_size = sizeof(T) * size + 0;
-  char *original_buffer = (char *)aligned_alloc(64, tot_size);
-
-  /* Read and write to each element once. */
-  memset(original_buffer, 0, tot_size);
-  for (int64_t i = 0; i < tot_size; i++) {
-    original_buffer[i] = original_buffer[tot_size - i - 1];
-  }
+  // char *original_buffer = (char *)_aligned_malloc(64, tot_size);
+  char *original_buffer = (char *)aligned_allocate(tot_size, 64);
 
   return reinterpret_cast<T *>(original_buffer + offset);
 }
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char const *argv[])
+{
 
   argparse::ArgumentParser arg_parser("throughput_analysis");
   arg_parser.add_argument("buffer_size")
       .help("size of the buffer used in each iteration")
       .scan<'i', int64_t>()
       .default_value<int64_t>(1e5);
-  try {
+  try
+  {
     arg_parser.parse_args(argc, argv);
-  } catch (const std::runtime_error &err) {
+  }
+  catch (const std::runtime_error &err)
+  {
     std::cerr << err.what() << "\n";
     std::cerr << arg_parser;
     return 1;
@@ -52,12 +59,13 @@ int main(int argc, char const *argv[]) {
 
   const int64_t iterations = tot_throughput / buffer_size;
 
+  /* Warm up memory. */
+  add_constant(buffer1, value, buffer2, buffer_size);
+
   const auto start_time = std::chrono::high_resolution_clock::now();
+  for (int64_t iter = 0; iter < iterations; iter++)
   {
-    for (int64_t iter = 0; iter < iterations; iter++) {
-      add_constant(buffer1, value, buffer2, buffer_size);
-      // std::swap(a, b);
-    }
+    add_constant(buffer1, value, buffer2, buffer_size);
   }
   const auto end_time = std::chrono::high_resolution_clock::now();
   const std::chrono::nanoseconds duration = end_time - start_time;

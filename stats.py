@@ -25,6 +25,7 @@ def compile_program(flags: tuple[str] = ()):
         "-std=c++17"
     ]
     args += list(flags)
+    print("Run", " ".join([str(arg) for arg in args]))
     subprocess.run(args)
 
 def run_program(args: tuple[str] = ()) -> str:
@@ -38,7 +39,7 @@ def run_program(args: tuple[str] = ()) -> str:
 
 def get_alignment(pointer: int) -> int:
     alignment = 1
-    while (pointer & (alignment * 2)) == 0:
+    while (pointer & alignment) == 0:
         alignment *= 2
     return alignment
 
@@ -60,23 +61,27 @@ def generate_linear_sizes(min_size: int, max_size: int, step: int):
         value += step
     yield int(max_size)
 
+def generate_sizes():
+    # yield from generate_linear_sizes(1, 100, 1)
+    yield from generate_linear_sizes(5000, 8000, 16)
+
 sizes = []
 throughputs = []
 
-compile_program(("-O3", "-march=native", ))
+compile_program(("-O3", "-march=native"))
 # for size in generate_exponential_sizes(490000, 500000, 1.0001):
-for size in generate_linear_sizes(5000, 6500, 4):
+for size in generate_sizes():
     args = (str(size), )
     tot_used_bytes = size * 8 # 8 = 2 * sizeof(int)
-    iterations = 1
-    throughput_sum = 0
+    iterations = 3
+    throughputs_for_size = []
     for _ in range(iterations):
         result = run_program(args)
         single_throughput = result.throughput
-        print(get_alignment(result.buffer1), get_offset_in_page(result.buffer1))
+        # print(result.buffer1, get_alignment(result.buffer1), get_offset_in_page(result.buffer1))
         # print(get_alignment(result.buffer2), get_offset_in_page(result.buffer2))
-        throughput_sum += single_throughput
-    throughput = throughput_sum / iterations
+        throughputs_for_size.append(single_throughput)
+    throughput = list(sorted(throughputs_for_size))[1] 
     print(f"{size:11,}: {throughput:10.3f} iterations/ns    {tot_used_bytes:14,} bytes")
     sizes.append(size)
     throughputs.append(throughput)
