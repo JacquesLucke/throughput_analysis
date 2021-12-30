@@ -14,37 +14,33 @@
  * - operation complexity
  */
 
-static void *aligned_allocate(const int64_t size, const int64_t alignment)
-{
-  void *buffer = malloc(size + alignment - 1);
-  return (void *)(((uintptr_t)buffer + alignment) & ~(uintptr_t)(alignment - 1));
+static void* aligned_allocate(const int64_t size, const int64_t alignment) {
+  void* buffer = malloc(size + alignment - 1);
+  return (void*)(((uintptr_t)buffer + alignment) & ~(uintptr_t)(alignment - 1));
 }
 
 template <typename T>
-static T *alloc_buffer(const int64_t size)
-{
+static T* alloc_buffer(const int64_t size, const int64_t alignment) {
   const int64_t offset = 0;
-  const int64_t tot_size = sizeof(T) * size + 0;
-  // char *original_buffer = (char *)_aligned_malloc(64, tot_size);
-  char *original_buffer = (char *)aligned_allocate(tot_size, 64);
-
-  return reinterpret_cast<T *>(original_buffer + offset);
+  const int64_t tot_size = sizeof(T) * size + offset;
+  char* original_buffer = (char*)aligned_allocate(tot_size, alignment);
+  return reinterpret_cast<T*>(original_buffer + offset);
 }
 
-int main(int argc, char const *argv[])
-{
-
+int main(int argc, char const* argv[]) {
   argparse::ArgumentParser arg_parser("throughput_analysis");
   arg_parser.add_argument("buffer_size")
       .help("size of the buffer used in each iteration")
       .scan<'i', int64_t>()
       .default_value<int64_t>(1e5);
-  try
-  {
+  arg_parser.add_argument("alignment")
+      .help("alignment of the buffers being processed")
+      .scan<'i', int64_t>()
+      .default_value<int64_t>(64);
+
+  try {
     arg_parser.parse_args(argc, argv);
-  }
-  catch (const std::runtime_error &err)
-  {
+  } catch (const std::runtime_error& err) {
     std::cerr << err.what() << "\n";
     std::cerr << arg_parser;
     return 1;
@@ -53,8 +49,9 @@ int main(int argc, char const *argv[])
   const int64_t tot_throughput = 1e9;
 
   const int64_t buffer_size = arg_parser.get<int64_t>("buffer_size");
-  int *buffer1 = alloc_buffer<int>(buffer_size);
-  int *buffer2 = alloc_buffer<int>(buffer_size);
+  const int64_t alignment = arg_parser.get<int64_t>("alignment");
+  int* buffer1 = alloc_buffer<int>(buffer_size, alignment);
+  int* buffer2 = alloc_buffer<int>(buffer_size, alignment);
   const int64_t value = 1;
 
   const int64_t iterations = tot_throughput / buffer_size;
@@ -63,8 +60,7 @@ int main(int argc, char const *argv[])
   add_constant(buffer1, value, buffer2, buffer_size);
 
   const auto start_time = std::chrono::high_resolution_clock::now();
-  for (int64_t iter = 0; iter < iterations; iter++)
-  {
+  for (int64_t iter = 0; iter < iterations; iter++) {
     add_constant(buffer1, value, buffer2, buffer_size);
   }
   const auto end_time = std::chrono::high_resolution_clock::now();
