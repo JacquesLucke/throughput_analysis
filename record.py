@@ -63,7 +63,7 @@ def get_alignment(pointer: int) -> int:
 def get_offset_in_page(pointer: int) -> int:
     return pointer % 4096
 
-def exponantial_steps(min_size: int, max_size: int, factor: float):
+def exponential_steps(min_size: int, max_size: int, factor: float):
     value = min_size
     while value < max_size:
         yield int(value)
@@ -156,7 +156,7 @@ all_steps = combine_steps(
     linear_steps(200, 1000, 2),
     linear_steps(1000, 6500, 4),
     linear_steps(6500, 30000, 16),
-    exponantial_steps(30000, 100_000_000, 1.01),
+    exponential_steps(30000, 100_000_000, 1.01),
 )
 
 low_steps = combine_steps(linear_steps(1, 150, 1))
