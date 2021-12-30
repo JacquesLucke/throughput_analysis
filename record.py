@@ -1,14 +1,8 @@
-'''
-requires: plotly, pandas
-'''
 
-from logging import log
-from os import PathLike
 import subprocess
 from pathlib import Path
-from dataclasses import dataclass
-import sys
 from typing import Callable
+from dataclasses import dataclass
 
 @dataclass
 class ProgramResult:
