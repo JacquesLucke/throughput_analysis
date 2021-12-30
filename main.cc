@@ -8,12 +8,6 @@
 
 #include "benchmark_functions.hh"
 
-/**
- * Variables to change:
- * - offset in page
- * - operation complexity
- */
-
 static void* aligned_allocate(const int64_t size, const int64_t alignment) {
   void* buffer = malloc(size + alignment - 1);
   return (void*)(((uintptr_t)buffer + alignment) & ~(uintptr_t)(alignment - 1));
