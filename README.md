@@ -36,7 +36,7 @@ Some notes:
         * Between 10k and 30k in the graph there are regular drops in performance. 
         * I measured them on linux and windows, so it's likely not specific to the allocator.
         * With more alignment, the spikes go away, but overall performance is worse. Also the spikes don't come back when applying an offset in the aligned array. It seems to be related to the total amount of allocated memory.
-        * Might also be related to page sizes or cpu cache assoziativity.
+        * Might also be related to page sizes or cpu cache associativity.
 
 
 
